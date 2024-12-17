@@ -58,7 +58,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "commit-crafter=commit_crafter:app",  # This links the command to your Typer app
+            "commit-crafter=commit_crafter.commit_crafter:app",
         ],
     },
     python_requires=">=3.7",
