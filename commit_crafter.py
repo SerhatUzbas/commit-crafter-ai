@@ -6,9 +6,7 @@ import sys
 import typer
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-
 from envloader import OPENAI_API_KEY
-
 
 app = typer.Typer()
 
@@ -54,7 +52,6 @@ def generate_commit_message(diff: str) -> str:
     )
 
     chain = prompt | llm
-
     response = chain.invoke({"diff": diff})
     return response.content
 
@@ -91,5 +88,4 @@ def craft():
 
 
 if __name__ == "__main__":
-    # load_dotenv()  # Load environment variables from .env file
     app()
