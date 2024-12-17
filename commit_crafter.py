@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
+import os
 import subprocess
 import sys
 import typer
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from dotenv import load_dotenv
+
+from envloader import OPENAI_API_KEY
+
 
 app = typer.Typer()
 
@@ -31,7 +34,7 @@ def get_git_diff() -> str:
 
 def generate_commit_message(diff: str) -> str:
     """Generate a commit message using LangChain and OpenAI"""
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7)
+    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7, api_key=OPENAI_API_KEY)
 
     prompt = ChatPromptTemplate.from_messages(
         [
@@ -88,5 +91,5 @@ def craft():
 
 
 if __name__ == "__main__":
-    load_dotenv()  # Load environment variables from .env file
-    app.run()
+    # load_dotenv()  # Load environment variables from .env file
+    app()
