@@ -47,7 +47,7 @@ def generate_commit_message(diff: str) -> str:
                 4. Be specific but concise
                 5. Focus on the "what" and "why" rather than "how"
                 6. Provide a detailed description of the changes step by step.
-                7. Do not use title and subtitle for the commit message and description. Example:
+                7. Do not use title, subtitle and markdown for the commit message. Example:
                 **commit message**
                 **detailed description**
                 8. When writing the detailed description, write it item by item.You can use markdown to make it more readable at the start of item.
