@@ -31,9 +31,10 @@ def get_git_diff() -> str:
 
 
 def generate_commit_message(diff: str) -> str:
-    """Generate a commit message using LangChain and OpenAI"""
+    """Generate a commit message and detailed description using LangChain and OpenAI"""
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7, api_key=OPENAI_API_KEY)
 
+    # Create a prompt that asks for both a commit message and a detailed description
     prompt = ChatPromptTemplate.from_messages(
         [
             (
@@ -45,14 +46,20 @@ def generate_commit_message(diff: str) -> str:
         3. Use present tense
         4. Be specific but concise
         5. Focus on the "what" and "why" rather than "how"
+        6. Provide a detailed description of the changes step by step.
         """,
             ),
-            ("user", "Generate a commit message for the following git diff:\n{diff}"),
+            (
+                "user",
+                "Generate a commit message and detailed description for the following git diff:\n{diff}",
+            ),
         ]
     )
 
     chain = prompt | llm
     response = chain.invoke({"diff": diff})
+
+    # Assuming the response contains both the commit message and the detailed description
     return response.content
 
 
@@ -67,6 +74,7 @@ def create_commit(message: str):
         if not diff_staged:
             subprocess.run(["git", "add", "."], check=True)
 
+        # Use the message directly for the commit
         subprocess.run(["git", "commit", "-m", message], check=True)
         print(f"Successfully committed with message: {message}")
     except subprocess.CalledProcessError as e:
