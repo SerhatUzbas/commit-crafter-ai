@@ -2,7 +2,8 @@ import os
 import subprocess
 import sys
 import typer
-import openai  # Import OpenAI directly
+from openai import OpenAI
+
 
 app = typer.Typer(help="AI-powered commit message generator")
 
@@ -10,7 +11,8 @@ app = typer.Typer(help="AI-powered commit message generator")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # Set the OpenAI API key
-openai.api_key = OPENAI_API_KEY
+
+client = OpenAI()
 
 
 def get_git_diff() -> str:
@@ -57,14 +59,14 @@ def generate_commit_message(diff: str) -> str:
     """
 
     # Call OpenAI API to get the response
-    response = openai.chat.completions.create(
+    response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
     )
 
-    # Assuming the response contains both the commit message and the detailed description
-    return response.choices[0].message["content"]
+    # Correctly access the content of the response
+    return response.choices[0].message.content
 
 
 def create_commit(message: str):
