@@ -30,12 +30,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Python 3.7+
 - OpenAI API key
 
-## Upload to PyPI
-
-```bash
-python -m twine upload dist/*
-```
-
 ## Setup
 
 1. Export your OpenAI API key:
