@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="commit-crafter-ai",
-    version="1.1.2",
+    version="1.2.1",
     author="Serhat Uzbas",
     author_email="serhatuzbas@gmail.com",
     description="AI-powered commit message generator",
@@ -24,6 +24,7 @@ setup(
         "typer[all]",
         "openai==1.57.4",
         "pyperclip",
+        "ollama",
     ],
     entry_points={
         "console_scripts": [

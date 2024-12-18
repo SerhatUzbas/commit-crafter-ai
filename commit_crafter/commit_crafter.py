@@ -4,14 +4,13 @@ import sys
 import typer
 import pyperclip
 from openai import OpenAI
+from ollama import chat, ChatResponse
 
 
 app = typer.Typer(help="AI-powered commit message generator")
 
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-client = OpenAI()
 
 
 def get_git_diff() -> str:
@@ -35,45 +34,61 @@ def get_git_diff() -> str:
         sys.exit(1)
 
 
-def generate_commit_message(diff: str) -> str:
-    """Generate a commit message and detailed description using OpenAI"""
-    try:
-        if not OPENAI_API_KEY:
-            print("Error: OPENAI_API_KEY environment variable is not set")
-            sys.exit(1)
+def generate_commit_message(diff: str, ollama: bool = False) -> str:
+    """Generate a commit message and detailed description using the selected AI client"""
 
-        # Create a prompt that asks for both a commit message and a detailed description
-        prompt = f"""You are a helpful assistant that generates clear and concise git commit messages.
-        Follow these rules:
-        1. Use the conventional commits format (type: description)
-        2. Keep the message under 72 characters
-        3. Use present tense
-        4. Be specific but concise
-        5. Focus on the "what" and "why" rather than "how"
-        6. Provide a detailed description of the changes step by step.
-        7. Do not use title, subtitle and markdown for the commit message. Example:
-        **commit message**
-        **detailed description**
-        8. When writing the detailed description, write it item by item. You can use markdown to make it more readable at the start of item.
-        
-        Generate a commit message and detailed description for the following git diff:
-        {diff}
-        """
-
-        # Call OpenAI API to get the response
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7,
-        )
-
-        # Correctly access the content of the response
-        return response.choices[0].message.content.strip()
-    except Exception:
-        print(
-            f"Error generating commit message. If you think this is a bug, please report it to serhatuzbas@gmail.com"
-        )
+    if not ollama and not OPENAI_API_KEY:
+        print("Error: OPENAI_API_KEY environment variable is not set for OpenAI")
         sys.exit(1)
+
+    # Create a prompt that asks for both a commit message and a detailed description
+    prompt = f"""You are a helpful assistant that generates clear and concise git commit messages.
+    Follow these rules:
+    1. Use the conventional commits format (type: description)
+    2. Keep the message under 72 characters
+    3. Use present tense
+    4. Be specific but concise
+    5. Focus on the "what" and "why" rather than "how"
+    6. Provide a detailed description of the changes step by step.
+    7. Do not use title, subtitle and markdown for the commit message. Example:
+    **commit message**
+    **detailed description**
+    8. When writing the detailed description, write it item by item. You can use markdown to make it more readable at the start of item.
+        
+    Generate a commit message and detailed description for the following git diff:
+    {diff}
+    """
+
+    if ollama:
+        try:
+            response: ChatResponse = chat(
+                model="llama3.2:3b",
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return response.message.content.strip()
+        except Exception as e:
+            print(
+                f"Error generating commit message. If you think this is a bug, please report it to serhatuzbas@gmail.com",
+                e,
+            )
+
+            sys.exit(1)
+    else:
+        try:
+            client = OpenAI()
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+            )
+
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            print(
+                f"Error generating commit message. If you think this is a bug, please report it to serhatuzbas@gmail.com",
+                e,
+            )
+            sys.exit(1)
 
 
 def create_commit(message: str):
@@ -106,7 +121,7 @@ def callback():
 
 
 @app.command()
-def craft(copy: bool = False):
+def craft(copy: bool = False, ollama: bool = False):
     """Craft a commit message and create a commit"""
     try:
         diff = get_git_diff()
@@ -115,7 +130,7 @@ def craft(copy: bool = False):
             print("No changes to commit!")
             sys.exit(0)
 
-        commit_message = generate_commit_message(diff)
+        commit_message = generate_commit_message(diff, ollama)
 
         if copy:
             pyperclip.copy(commit_message)

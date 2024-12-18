@@ -12,11 +12,21 @@ pip install commit-crafter-ai
 
 ### Craft a commit message and directly create a commit
 
+Default client is OpenAI:
+
 ```bash
 commit-crafter-ai craft
 ```
 
+If you want to use ollama:
+
+```bash
+commit-crafter-ai craft --ollama
+```
+
 ### Craft a commit message and copy it to clipboard
+
+If you want to copy the commit message to clipboard instead of directly creating a commit:
 
 ```bash
 commit-crafter-ai craft --copy
