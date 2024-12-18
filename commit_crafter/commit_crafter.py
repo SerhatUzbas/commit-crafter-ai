@@ -6,9 +6,11 @@ import sys
 import typer
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from .envloader import OPENAI_API_KEY
 
 app = typer.Typer(help="AI-powered commit message generator")
+
+# Instead, get it from environment variables
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
 def get_git_diff() -> str:
@@ -32,6 +34,10 @@ def get_git_diff() -> str:
 
 def generate_commit_message(diff: str) -> str:
     """Generate a commit message and detailed description using LangChain and OpenAI"""
+    if not OPENAI_API_KEY:
+        print("Error: OPENAI_API_KEY environment variable is not set")
+        sys.exit(1)
+
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.7, api_key=OPENAI_API_KEY)
 
     # Create a prompt that asks for both a commit message and a detailed description

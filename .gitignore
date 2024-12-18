@@ -14,6 +14,7 @@ venv.bak/
 *.egg-info/
 dist/
 build/
+.pypirc
 
 # Logs
 *.log
