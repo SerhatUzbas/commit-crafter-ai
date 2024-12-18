@@ -10,8 +10,16 @@ pip install commit-crafter-ai
 
 ## Usage
 
+### Craft a commit message and directly create a commit
+
 ```bash
 commit-crafter-ai craft
+```
+
+### Craft a commit message and copy it to clipboard
+
+```bash
+commit-crafter-ai craft --copy
 ```
 
 ## License
