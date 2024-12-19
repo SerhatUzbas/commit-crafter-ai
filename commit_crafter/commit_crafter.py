@@ -34,7 +34,9 @@ def get_git_diff() -> str:
         sys.exit(1)
 
 
-def generate_commit_message(diff: str, ollama: bool = False) -> str:
+def generate_commit_message(
+    diff: str, ollama: bool = False, model: str = "llama3.2:3b"
+) -> str:
     """Generate a commit message and detailed description using the selected AI client"""
 
     if not ollama and not OPENAI_API_KEY:
@@ -62,7 +64,7 @@ def generate_commit_message(diff: str, ollama: bool = False) -> str:
     if ollama:
         try:
             response: ChatResponse = chat(
-                model="llama3.2:3b",
+                model=model,
                 messages=[{"role": "user", "content": prompt}],
             )
             return response.message.content.strip()
@@ -121,8 +123,12 @@ def callback():
 
 
 @app.command()
-def craft(copy: bool = False, ollama: bool = False):
+def craft(copy: bool = False, ollama: bool = False, model: str = "llama3.2:3b"):
     """Craft a commit message and create a commit"""
+    if ollama:
+        # If ollama is True, we can allow the user to specify a model
+        model = model  # This will take the default value if not specified
+
     try:
         diff = get_git_diff()
 
@@ -130,7 +136,7 @@ def craft(copy: bool = False, ollama: bool = False):
             print("No changes to commit!")
             sys.exit(0)
 
-        commit_message = generate_commit_message(diff, ollama)
+        commit_message = generate_commit_message(diff, ollama, model)
 
         if copy:
             pyperclip.copy(commit_message)
