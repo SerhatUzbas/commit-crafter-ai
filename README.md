@@ -1,6 +1,6 @@
 # commit-crafter-ai
 
-Ai tool to craft commit from terminal.
+An AI-powered commit message generator that uses either OpenAI's GPT models or Ollama's local models to create meaningful git commit messages.
 
 ## Installation
 
@@ -18,10 +18,10 @@ Default client is OpenAI:
 commit-crafter-ai craft
 ```
 
-If you want to use ollama:
+If you want to use Ollama with a specific model:
 
 ```bash
-commit-crafter-ai craft --ollama
+commit-crafter-ai craft --ollama 'model-name'
 ```
 
 ### Craft a commit message and copy it to clipboard

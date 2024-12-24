@@ -6,7 +6,6 @@ import pyperclip
 from openai import OpenAI
 from ollama import chat, ChatResponse
 
-
 app = typer.Typer(help="AI-powered commit message generator")
 
 
@@ -27,7 +26,9 @@ def get_git_diff() -> str:
             ).decode("utf-8")
 
         return diff_output
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as e:
+        print(e, file=sys.stderr)  # Print the error message
+        print()  # Print an empty line
         print(
             f"Error getting git diff. If you think this is a bug, please report it to serhatuzbas@gmail.com"
         )
@@ -67,11 +68,13 @@ def generate_commit_message(
                 model=model,
                 messages=[{"role": "user", "content": prompt}],
             )
-            return response.message.content.strip()
+            return response["message"]["content"].strip()
         except Exception as e:
+            print(e, file=sys.stderr)  # Print the error message
+            print()  # Print an empty line
             print(
                 f"Error generating commit message. If you think this is a bug, please report it to serhatuzbas@gmail.com",
-                e,
+                file=sys.stderr,
             )
 
             sys.exit(1)
@@ -86,9 +89,11 @@ def generate_commit_message(
 
             return response.choices[0].message.content.strip()
         except Exception as e:
+            print(e, file=sys.stderr)  # Print the error message
+            print()  # Print an empty line
             print(
                 f"Error generating commit message. If you think this is a bug, please report it to serhatuzbas@gmail.com",
-                e,
+                file=sys.stderr,
             )
             sys.exit(1)
 
@@ -123,12 +128,17 @@ def callback():
 
 
 @app.command()
-def craft(copy: bool = False, ollama: bool = False, model: str = "llama3.2:3b"):
+def craft(
+    copy: bool = typer.Option(
+        False, "--copy", help="Copy the commit message to clipboard"
+    ),
+    ollama: str = typer.Option(
+        None,
+        "--ollama",
+        help="Use Ollama with specified model (e.g., --ollama 'llama3.2:3b')",
+    ),
+):
     """Craft a commit message and create a commit"""
-    if ollama:
-        # If ollama is True, we can allow the user to specify a model
-        model = model  # This will take the default value if not specified
-
     try:
         diff = get_git_diff()
 
@@ -136,7 +146,10 @@ def craft(copy: bool = False, ollama: bool = False, model: str = "llama3.2:3b"):
             print("No changes to commit!")
             sys.exit(0)
 
-        commit_message = generate_commit_message(diff, ollama, model)
+        # If ollama is provided, use it as the model name, otherwise use OpenAI
+        use_ollama = ollama is not None
+        model = ollama if use_ollama else None
+        commit_message = generate_commit_message(diff, use_ollama, model)
 
         if copy:
             pyperclip.copy(commit_message)
