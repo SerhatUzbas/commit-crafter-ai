@@ -2,19 +2,35 @@
 # Byte-compiled files
 __pycache__/
 *.py[cod]
-
-# Distribution / packaging
+*$py.class
+*.so
 .Python
-env/
-.ENV
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
 venv/
 ENV/
-env.bak/
-venv.bak/
-*.egg-info/
-dist/
-build/
-.pypirc
+
+# IDE
+.idea/
+.vscode/
+
+# Environment variables
+.env
 
 # Logs
 *.log
@@ -33,12 +49,6 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
-
-# IDEs and editors
-.idea/
-.vscode/
-*.swp
-*.swo
 
 # Python virtual environments
 .venv/
