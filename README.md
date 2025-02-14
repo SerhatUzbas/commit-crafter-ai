@@ -32,6 +32,10 @@ If you want to copy the commit message to clipboard instead of directly creating
 commit-crafter-ai craft --copy
 ```
 
+## Configuration
+
+You can customize the commit message generation prompt by creating a `craft.config` file in your project root directory. If no config file is found, the default prompt will be used.
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

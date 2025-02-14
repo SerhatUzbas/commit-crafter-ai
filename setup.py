@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="commit-crafter-ai",
-    version="1.3.3",
+    version="1.4.1",
     author="Serhat Uzbas",
     author_email="serhatuzbas@gmail.com",
     description="AI-powered commit message generator",

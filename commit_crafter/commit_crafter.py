@@ -12,6 +12,20 @@ app = typer.Typer(help="AI-powered commit message generator")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
+def get_prompt_from_config() -> str:
+    """Get custom prompt from craft.config file if it exists"""
+    config_path = os.path.join(os.getcwd(), "craft.config")
+
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r") as f:
+                return f.read().strip()
+        except Exception as e:
+            print(f"Error reading config file: {e}", file=sys.stderr)
+            return None
+    return None
+
+
 def get_git_diff() -> str:
     """Get the git diff output for staged changes"""
     try:
@@ -20,15 +34,15 @@ def get_git_diff() -> str:
         ).decode("utf-8")
 
         if not diff_output:
-            # If no staged changes, get unstaged changes
+
             diff_output = subprocess.check_output(
                 ["git", "diff"], stderr=subprocess.STDOUT
             ).decode("utf-8")
 
         return diff_output
     except subprocess.CalledProcessError as e:
-        print(e, file=sys.stderr)  # Print the error message
-        print()  # Print an empty line
+        print(e, file=sys.stderr)
+        print()
         print(
             f"Error getting git diff. If you think this is a bug, please report it to serhatuzbas@gmail.com"
         )
@@ -44,8 +58,8 @@ def generate_commit_message(
         print("Error: OPENAI_API_KEY environment variable is not set for OpenAI")
         sys.exit(1)
 
-    # Create a prompt that asks for both a commit message and a detailed description
-    prompt = f"""You are a helpful assistant that generates clear and concise git commit messages.
+    custom_prompt = get_prompt_from_config()
+    default_prompt = """You are a helpful assistant that generates clear and concise git commit messages.
     Follow these rules:
     1. Use the conventional commits format (type: description)
     2. Keep the message under 72 characters
@@ -57,6 +71,9 @@ def generate_commit_message(
     **commit message**
     **detailed description**
     8. When writing the detailed description, write it item by item. You can use markdown to make it more readable at the start of item.
+    """
+
+    prompt = f"""{custom_prompt or default_prompt}
         
     Generate a commit message and detailed description for the following git diff:
     {diff}
