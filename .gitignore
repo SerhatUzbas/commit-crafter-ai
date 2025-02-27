@@ -22,7 +22,7 @@ wheels/
 *.egg
 craft.config
 .pypirc
-
+requirements.txt
 # Virtual Environment
 venv/
 ENV/
